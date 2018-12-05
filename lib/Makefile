@@ -37,7 +37,6 @@ obj-$(CONFIG_LZ4) += lz4_wrapper.o
 obj-$(CONFIG_MD5) += md5.o
 obj-y += net_utils.o
 obj-$(CONFIG_PHYSMEM) += physmem.o
-obj-y += qsort.o
 obj-y += rc4.o
 obj-$(CONFIG_SHA1) += sha1.o
 obj-$(CONFIG_SUPPORT_EMMC_RPMB) += sha256.o
@@ -61,6 +60,7 @@ obj-$(CONFIG_SPL_YMODEM_SUPPORT) += crc16.o
 obj-$(CONFIG_SPL_NET_SUPPORT) += net_utils.o
 endif
 obj-$(CONFIG_ADDR_MAP) += addr_map.o
+obj-y += qsort.o
 obj-y += hashtable.o
 obj-y += errno.o
 obj-y += display_options.o

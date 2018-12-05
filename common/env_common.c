@@ -268,11 +268,23 @@ void env_relocate(void)
 	}
 }
 
-#if defined(CONFIG_AUTO_COMPLETE) && !defined(CONFIG_SPL_BUILD)
-int env_complete(char *var, int maxv, char *cmdv[], int bufsz, char *buf)
+#ifdef CONFIG_AUTO_COMPLETE
+int env_complete(char *var, int maxv, char *cmdv[], int bufsz, char *buf,
+		 bool dollar_comp)
 {
 	ENTRY *match;
 	int found, idx;
+
+	if (dollar_comp) {
+		/*
+		 * When doing $ completion, the first character should
+		 * obviously be a '$'.
+		 */
+		if (var[0] != '$')
+			return 0;
+
+		var++;
+	}
 
 	idx = 0;
 	found = 0;
@@ -281,10 +293,19 @@ int env_complete(char *var, int maxv, char *cmdv[], int bufsz, char *buf)
 	while ((idx = hmatch_r(var, idx, &match, &env_htab))) {
 		int vallen = strlen(match->key) + 1;
 
-		if (found >= maxv - 2 || bufsz < vallen)
+		if (found >= maxv - 2 ||
+		    bufsz < vallen + (dollar_comp ? 2 : 0))
 			break;
 
 		cmdv[found++] = buf;
+
+		/* Add the '$' prefix to each var when doing $ completion. */
+		if (dollar_comp) {
+			strcpy(buf, "$");
+			buf += 1;
+			bufsz -= 2;
+		}
+
 		memcpy(buf, match->key, vallen);
 		buf += vallen;
 		bufsz -= vallen;
@@ -293,7 +314,7 @@ int env_complete(char *var, int maxv, char *cmdv[], int bufsz, char *buf)
 	qsort(cmdv, found, sizeof(cmdv[0]), strcmp_compar);
 
 	if (idx)
-		cmdv[found++] = "...";
+		cmdv[found++] = dollar_comp ? "$..." : "...";
 
 	cmdv[found] = NULL;
 	return found;

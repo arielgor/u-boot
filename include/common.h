@@ -417,7 +417,8 @@ static inline int setenv_addr(const char *varname, const void *addr)
 #endif /* CONFIG_ARC */
 
 #ifdef CONFIG_AUTO_COMPLETE
-int env_complete(char *var, int maxv, char *cmdv[], int maxsz, char *buf);
+int env_complete(char *var, int maxv, char *cmdv[], int maxsz, char *buf,
+		 bool dollar_comp);
 #endif
 int get_env_id (void);
 
