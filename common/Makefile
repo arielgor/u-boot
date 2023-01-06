@@ -87,6 +87,7 @@ obj-$(CONFIG_MENU) += menu.o
 obj-$(CONFIG_UPDATE_TFTP) += update.o
 obj-$(CONFIG_DFU_TFTP) += update.o
 obj-$(CONFIG_USB_KEYBOARD) += usb_kbd.o
+obj-$(CONFIG_CMDLINE) += cli_getch.o cli_readline.o cli_simple.o
 
 endif # !CONFIG_SPL_BUILD
 
@@ -154,7 +155,7 @@ endif
 obj-$(CONFIG_CMDLINE) += cli_simple.o
 
 obj-y += cli.o
-obj-$(CONFIG_CMDLINE) += cli_readline.o
+obj-$(CONFIG_FSL_DDR_INTERACTIVE) += cli_getch.o cli_simple.o cli_readline.o
 obj-y += command.o
 obj-y += s_record.o
 obj-y += xyzModem.o
