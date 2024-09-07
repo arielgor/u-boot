@@ -333,6 +333,25 @@ static int cread_line(const char *const prompt, char *buf, unsigned int *len,
 				eol_num--;
 			}
 			break;
+		case CTL_DEL:
+			if (num < eol_num) {
+				uint word_end;
+
+				/* Consume leading spaces, then the word itself */
+				for (word_end = num; word_end < eol_num && buf[word_end] == ' '; word_end++)
+					;
+				for (; word_end < eol_num && buf[word_end] != ' '; word_end++)
+					;
+				/* Delete chars from num to word_end */
+				memmove(&buf[num], &buf[word_end], eol_num - word_end + 1);
+				
+				wlen = word_end - num;
+				eol_num -= wlen;
+				putnstr(buf + num, eol_num - num);
+				getcmd_putchars(wlen, ' ');
+				getcmd_putchars(wlen + eol_num - num, CTL_BACKSPACE);
+			}
+			break;
 		case CTL_CH('k'):
 			ERASE_TO_EOL();
 			break;

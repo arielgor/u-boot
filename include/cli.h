@@ -172,6 +172,8 @@ void cli_init(void);
 #define endtick(seconds) (get_ticks() + (uint64_t)(seconds) * get_tbclk())
 #define CTL_CH(c)		((c) - 'a' + 1)
 
+#define CTL_DEL ((char)254)
+
 /**
  * cli_ch_init() - Set up the initial state to process input characters
  *

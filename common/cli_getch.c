@@ -108,6 +108,13 @@ static int cli_ch_esc(struct cli_ch_state *cch, int ichar,
 				break;	/* pass to ^E handler */
 			}
 			break;
+            case ';':
+				switch (cch->esc_save[2]) {
+				case '3':
+					act = ESC_SAVE;
+					break;
+				}
+				break;
 		case '0':
 			if (cch->esc_save[2] == '2')
 				act = ESC_SAVE;
@@ -120,12 +127,22 @@ static int cli_ch_esc(struct cli_ch_state *cch, int ichar,
 		case '1':
 			act = ESC_SAVE;
 			break;		/* bracketed paste */
+		case '5':
+			act = ESC_SAVE; /* CTL+<key> sequence */
+			break;
 		}
 		break;
 	case 5:
-		if (ichar == '~') {	/* bracketed paste */
-			ichar = 0;
-			act = ESC_CONVERTED;
+		switch (ichar) {
+		case '~':
+			if (cch->esc_save[2] == '3' && cch->esc_save[3] == ';') {
+				ichar = CTL_DEL;
+				act = ESC_CONVERTED; /* CTL+DEL */
+			} else if (cch->esc_save[2] == '2' && cch->esc_save[3] == '0') {
+				ichar = 0;
+				act = ESC_CONVERTED; /* bracketed paste */
+			}
+			break;
 		}
 	}
 
