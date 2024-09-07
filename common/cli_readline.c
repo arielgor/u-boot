@@ -297,6 +297,8 @@ static int cread_line(const char *const prompt, char *buf, unsigned int *len,
 			break;
 		}
 
+		/* Discard junk characters in the buffer */
+		buf[eol_num] = '\0';
 		switch (ichar) {
 		case CTL_CH('a'):
 			BEGINNING_OF_LINE();
@@ -357,7 +359,7 @@ static int cread_line(const char *const prompt, char *buf, unsigned int *len,
 					eol_num - base + 1);
 				num = base;
 				getcmd_putchars(wlen, CTL_BACKSPACE);
-				puts(buf + base);
+				putnstr(buf + num, eol_num - num);
 				getcmd_putchars(wlen, ' ');
 				getcmd_putchars(wlen + eol_num - num,
 						CTL_BACKSPACE);
