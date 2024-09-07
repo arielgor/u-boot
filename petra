@@ -1,0 +1,26 @@
+#!/bin/env bash
+
+while [ $# -gt 0 ]; do
+	case "$1" in
+	build)
+		make ARCH=powerpc CROSS_COMPILE=powerpc-linux-gnu- all 
+		shift
+		;;
+	run)
+		qemu-system-ppc -M ppce500 -nographic -bios u-boot
+		shift
+		;;
+	defconfig)
+		make ARCH=powerpc CROSS_COMPILE=powerpc-linux-gnu- qemu-ppce500_defconfig
+		shift
+		;;
+	menuconfig) 
+		make ARCH=powerpc CROSS_COMPILE=powerpc-linux-gnu- menuconfig
+		shift
+		;;
+	*)
+		shift
+		;;
+	esac
+done
+
