@@ -396,7 +396,7 @@ static int cread_line(const char *const prompt, char *buf, unsigned int *len,
 				uint base;
 
 				for (base = num - 1;
-				     base >= 0 && buf[base] == ' ';)
+				     base > 0 && buf[base] == ' ';)
 					base--;
 				for (; base > 0 && buf[base - 1] != ' ';)
 					base--;
