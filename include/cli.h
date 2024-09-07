@@ -173,6 +173,8 @@ void cli_init(void);
 #define CTL_CH(c)		((c) - 'a' + 1)
 
 #define CTL_DEL ((char)254)
+#define CTL_LEFT_ARROW ((char)253)
+#define CTL_RIGHT_ARROW ((char)252)
 
 /**
  * cli_ch_init() - Set up the initial state to process input characters

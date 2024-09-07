@@ -318,6 +318,36 @@ static int cread_line(const char *const prompt, char *buf, unsigned int *len,
 				num--;
 			}
 			break;
+		case CTL_RIGHT_ARROW:
+			if (num < eol_num) {
+				uint word_end;
+
+				/* Consume leading spaces, then the word itself */
+				for (word_end = num; word_end < eol_num && buf[word_end] == ' '; word_end++)
+					;
+				for (; word_end < eol_num && buf[word_end] != ' '; word_end++)
+					;
+				
+				wlen = word_end - num;
+				putnstr(buf + num, wlen);
+				num = word_end;
+			}
+			break;
+		case CTL_LEFT_ARROW:
+			if (num) {
+				uint base;
+
+				for (base = num - 1; base > 0 && buf[base] == ' '; base--)
+					;
+				for (; base > 0 && buf[base - 1] != ' '; base--)
+					;
+
+				/* move back from num to base */
+				wlen = num - base;
+				getcmd_putchars(wlen, CTL_BACKSPACE);
+				num = base;
+			}
+			break;
 		case CTL_CH('d'):
 			if (num < eol_num) {
 				wlen = eol_num - num - 1;

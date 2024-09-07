@@ -110,6 +110,7 @@ static int cli_ch_esc(struct cli_ch_state *cch, int ichar,
 			break;
             case ';':
 				switch (cch->esc_save[2]) {
+				case '1':
 				case '3':
 					act = ESC_SAVE;
 					break;
@@ -142,6 +143,14 @@ static int cli_ch_esc(struct cli_ch_state *cch, int ichar,
 				ichar = 0;
 				act = ESC_CONVERTED; /* bracketed paste */
 			}
+			break;
+		case 'C':
+			ichar = CTL_RIGHT_ARROW;
+			act = ESC_CONVERTED;
+			break;
+		case 'D':
+			ichar = CTL_LEFT_ARROW;
+			act = ESC_CONVERTED;
 			break;
 		}
 	}
