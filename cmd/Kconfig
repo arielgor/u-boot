@@ -36,6 +36,11 @@ config SYS_PROMPT
 	  This string is displayed in the command line to the left of the
 	  cursor.
 
+config ARIEL_IMPROVED_CMDLINE_EDITING
+	bool "Use improved command line"
+	help
+	  Enable the improved command line features.
+
 menu "Autoboot options"
 
 config AUTOBOOT_KEYED
