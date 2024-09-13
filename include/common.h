@@ -417,9 +417,12 @@ static inline int setenv_addr(const char *varname, const void *addr)
 #endif /* CONFIG_ARC */
 
 #ifdef CONFIG_AUTO_COMPLETE
-int env_complete(char *var, int maxv, char *cmdv[], int maxsz, char *buf,
+#ifdef CONFIG_ARIEL_IMPROVED_CMDLINE
+int env_complete(char *var, int maxv, char *cmdv[], int bufsz, char *buf,
 		 bool dollar_comp);
-#endif
+#else
+int env_complete(char *var, int maxv, char *cmdv[], int maxsz, char *buf);
+#endif /* CONFIG_ARIEL_IMPROVED_CMDLINE */
 int get_env_id (void);
 
 void	pci_init      (void);

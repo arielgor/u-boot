@@ -269,12 +269,17 @@ void env_relocate(void)
 }
 
 #ifdef CONFIG_AUTO_COMPLETE
+#ifdef CONFIG_ARIEL_IMPROVED_CMDLINE
 int env_complete(char *var, int maxv, char *cmdv[], int bufsz, char *buf,
 		 bool dollar_comp)
+#else
+int env_complete(char *var, int maxv, char *cmdv[], int bufsz, char *buf)
+#endif /* CONFIG_ARIEL_IMPROVED_CMDLINE */
 {
 	ENTRY *match;
 	int found, idx;
 
+#ifdef CONFIG_ARIEL_IMPROVED_CMDLINE
 	if (dollar_comp) {
 		/*
 		 * When doing $ completion, the first character should
@@ -285,6 +290,7 @@ int env_complete(char *var, int maxv, char *cmdv[], int bufsz, char *buf,
 
 		var++;
 	}
+#endif /* CONFIG_ARIEL_IMPROVED_CMDLINE */
 
 	idx = 0;
 	found = 0;
@@ -293,18 +299,24 @@ int env_complete(char *var, int maxv, char *cmdv[], int bufsz, char *buf,
 	while ((idx = hmatch_r(var, idx, &match, &env_htab))) {
 		int vallen = strlen(match->key) + 1;
 
+#ifdef CONFIG_ARIEL_IMPROVED_CMDLINE
 		if (found >= maxv - 2 ||
 		    bufsz < vallen + (dollar_comp ? 2 : 0))
+#else
+		if (found >= maxv - 2 || bufsz < vallen)
+#endif /* CONFIG_ARIEL_IMPROVED_CMDLINE */
 			break;
 
 		cmdv[found++] = buf;
 
+#ifdef CONFIG_ARIEL_IMPROVED_CMDLINE
 		/* Add the '$' prefix to each var when doing $ completion. */
 		if (dollar_comp) {
 			strcpy(buf, "$");
 			buf += 1;
 			bufsz -= 2;
 		}
+#endif /* CONFIG_ARIEL_IMPROVED_CMDLINE */
 
 		memcpy(buf, match->key, vallen);
 		buf += vallen;
@@ -314,7 +326,11 @@ int env_complete(char *var, int maxv, char *cmdv[], int bufsz, char *buf,
 	qsort(cmdv, found, sizeof(cmdv[0]), strcmp_compar);
 
 	if (idx)
+#ifdef CONFIG_ARIEL_IMPROVED_CMDLINE
 		cmdv[found++] = dollar_comp ? "$..." : "...";
+#else
+		cmdv[found++] = "...";
+#endif /* CONFIG_ARIEL_IMPROVED_CMDLINE */
 
 	cmdv[found] = NULL;
 	return found;

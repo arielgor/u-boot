@@ -143,26 +143,40 @@ int cmd_usage(const cmd_tbl_t *cmdtp)
 }
 
 #ifdef CONFIG_AUTO_COMPLETE
+#ifdef CONFIG_ARIEL_IMPROVED_CMDLINE
 static char env_complete_buf[512];
+#endif /* CONFIG_ARIEL_IMPROVED_CMDLINE */
 
 int var_complete(int argc, char * const argv[], char last_char, int maxv, char *cmdv[])
 {
+#ifndef CONFIG_ARIEL_IMPROVED_CMDLINE
+	static char tmp_buf[512];
+#endif /* CONFIG_ARIEL_IMPROVED_CMDLINE */
 	int space;
 
 	space = last_char == '\0' || isblank(last_char);
 
 	if (space && argc == 1)
+#ifdef CONFIG_ARIEL_IMPROVED_CMDLINE
 		return env_complete("", maxv, cmdv, sizeof(env_complete_buf),
 				    env_complete_buf, false);
+#else
+		return env_complete("", maxv, cmdv, sizeof(tmp_buf), tmp_buf);
+#endif /* CONFIG_ARIEL_IMPROVED_CMDLINE */
 
 	if (!space && argc == 2)
+#ifdef CONFIG_ARIEL_IMPROVED_CMDLINE
 		return env_complete(argv[1], maxv, cmdv,
 				    sizeof(env_complete_buf),
 				    env_complete_buf, false);
+#else
+		return env_complete(argv[1], maxv, cmdv, sizeof(tmp_buf), tmp_buf);
+#endif /* CONFIG_ARIEL_IMPROVED_CMDLINE */
 
 	return 0;
 }
 
+#ifdef CONFIG_ARIEL_IMPROVED_CMDLINE
 static int dollar_complete(int argc, char * const argv[], char last_char,
 			   int maxv, char *cmdv[])
 {
@@ -174,6 +188,7 @@ static int dollar_complete(int argc, char * const argv[], char last_char,
 	return env_complete(argv[argc - 1], maxv, cmdv, sizeof(env_complete_buf),
 			    env_complete_buf, true);
 }
+#endif /* CONFIG_ARIEL_IMPROVED_CMDLINE */
 
 /*************************************************************************************/
 
@@ -361,6 +376,7 @@ int cmd_auto_complete(const char *const prompt, char *buf, int *np, int *colp)
 	/* separate into argv */
 	argc = make_argv(tmp_buf, sizeof(argv)/sizeof(argv[0]), argv);
 
+#ifdef CONFIG_ARIEL_IMPROVED_CMDLINE
 	/* first try a $ completion */
 	i = dollar_complete(argc, argv, last_char,
 			    sizeof(cmdv) / sizeof(cmdv[0]), cmdv);
@@ -369,6 +385,11 @@ int cmd_auto_complete(const char *const prompt, char *buf, int *np, int *colp)
 		i = complete_cmdv(argc, argv, last_char,
 				  sizeof(cmdv) / sizeof(cmdv[0]), cmdv);
 	}
+#else
+	/* do the completion and return the possible completions */
+	i = complete_cmdv(argc, argv, last_char,
+			  sizeof(cmdv) / sizeof(cmdv[0]), cmdv);
+#endif /* CONFIG_ARIEL_IMPROVED_CMDLINE */
 
 	/* no match; bell and out */
 	if (i == 0) {
